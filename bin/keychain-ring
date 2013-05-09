@@ -45,7 +45,7 @@ EOD
 }
 
 gpg_keys() {
-  if [ -z $nogpg ]; then
+  if ((gpg)); then
     gpg --list-secret-keys --with-key-data | \
     sed -e '/^sec/!d;s/^.*[0-9]*:[A-F0-9]*\([A-F0-9]\{8\}\)\:.*$/\1/' | \
       tr "\n" " "
@@ -54,25 +54,25 @@ gpg_keys() {
 
 ssh_keys()
 {
-  if [ -z $nossh ]; then
+  if ((ssh)); then
     find $HOME/.ssh -type f -perm 0600 -name id_rsa\* -print 2>/dev/null
   fi
 }
 
 quiet=
-nogpg=1
-nossh=1
+gpg=0
+ssh=0
 
 while test -n "$1"
 do
   case "$1" in
     -h|--help) usage; exit 0;;
-    -n|--no-load) no-gpg=1; no-ssh=1;;
+    -n|--no-load) gpg=0; ssh=0;;
     -q|--quiet) quiet='-q';;
-    -g|--skip-gpg) nogpg=1;;
-    +g|--load-gpg) nogpg=;;
-    -s|--skip-ssh) nossh=1;;
-    +s|--load-ssh) nossh=;;
+    -g|--skip-gpg) gpg=0;;
+    +g|--load-gpg) gpg=1;;
+    -s|--skip-ssh) ssh=0;;
+    +s|--load-ssh) ssh=1;;
      *) ;;
   esac
   shift
